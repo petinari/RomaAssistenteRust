@@ -7,6 +7,7 @@ use model::ModelController;
 use tokio::net::TcpListener;
 use tower_cookies::CookieManagerLayer;
 
+mod ctx;
 mod error;
 mod model;
 mod web;
@@ -17,7 +18,7 @@ pub use self::error::{Error, Result};
 async fn main() {
     let mc = ModelController::new().await.unwrap();
 
-    let routes_api = web::routes_ticket::routes(mc)
+    let routes_api = web::routes_ticket::routes(mc.clone())
         .route_layer(middleware::from_fn(web::mw_auth::mw_require_auth));
 
     let routes_all = Router::new()
@@ -25,6 +26,10 @@ async fn main() {
         .merge(Router::new().route("/hello", get(hello)))
         .nest("/api", routes_api)
         .layer(middleware::map_response(main_response_mapper))
+        .layer(middleware::from_fn_with_state(
+            mc.clone(),
+            web::mw_auth::mw_ctx_resolver,
+        ))
         .layer(CookieManagerLayer::new());
 
     let addr = TcpListener::bind((Ipv4Addr::new(127, 0, 0, 1), 8080))

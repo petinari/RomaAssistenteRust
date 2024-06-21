@@ -4,6 +4,8 @@ use tower_cookies::{Cookie, Cookies};
 
 use crate::{Error, Result};
 
+use super::AUTH_TOKEN;
+
 #[derive(serde::Deserialize, Debug)]
 pub struct LoginPayload {
     pub username: String,
@@ -21,7 +23,11 @@ async fn login(cookies: Cookies, payload: Json<LoginPayload>) -> Result<Json<Val
         }
     }));
 
-    cookies.add(Cookie::new(crate::web::AUTH_TOKEN, "123456"));
+    // FIXME: Implement real auth-token generation/signature.
+    let mut cookie = Cookie::new(AUTH_TOKEN, "user-1.exp.sign");
+    cookie.set_http_only(true);
+    cookie.set_path("/");
+    cookies.add(cookie);
 
     if payload.username == "admin" && payload.pwd == "admin" {
         println!("Login Success");
