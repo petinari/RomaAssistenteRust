@@ -1,20 +1,20 @@
-pub use self::error::{Error, Result};
-
-use crate::ctx::Ctx;
-use crate::log::log_request;
-use crate::model::ModelController;
+use axum::{Json, middleware, Router};
 use axum::extract::{Path, Query};
 use axum::http::{Method, Uri};
 use axum::response::{Html, IntoResponse, Response};
-use axum::routing::{get, get_service};
-use axum::{middleware, Json, Router};
+use axum::routing::get;
 use serde::Deserialize;
 use serde_json::json;
-use std::net::SocketAddr;
 use tokio::net::TcpListener;
 use tower_cookies::CookieManagerLayer;
 //use tower_http::services::ServeDir;
 use uuid::Uuid;
+
+use crate::ctx::Ctx;
+use crate::log::log_request;
+use crate::model::ModelController;
+
+pub use self::error::{Error, Result};
 
 mod ctx;
 mod error;
@@ -91,10 +91,10 @@ async fn main_response_mapper(
     error_response.unwrap_or(res)
 }
 
-fn routes_static() -> Router {
+/*fn routes_static() -> Router {
     todo!()
     //Router::new().nest_service("/", get_service(ServeDir::new("./")))
-}
+}*/
 
 // region:    --- Routes Hello
 fn routes_hello() -> Router {

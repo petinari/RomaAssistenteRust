@@ -1,15 +1,16 @@
-use crate::ctx::Ctx;
-use crate::model::ModelController;
-use crate::{web::AUTH_TOKEN, Error};
-use axum::body::{Body, HttpBody};
+use axum::async_trait;
+use axum::body::Body;
 use axum::extract::{FromRequestParts, State};
-use axum::http::request::Parts;
 use axum::http::Request;
+use axum::http::request::Parts;
 use axum::middleware::Next;
 use axum::response::Response;
-use axum::{async_trait, RequestPartsExt};
 use lazy_regex::regex_captures;
 use tower_cookies::{Cookie, Cookies};
+
+use crate::{Error, web::AUTH_TOKEN};
+use crate::ctx::Ctx;
+use crate::model::ModelController;
 
 pub async fn mw_ctx_resolver(
     _mc: State<ModelController>,

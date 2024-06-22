@@ -44,13 +44,13 @@ impl ModelController {
     }
 
     //list all tickets
-    pub async fn list_tickets(&self, ctx: Ctx) -> Result<Vec<Ticket>, ()> {
+    pub async fn list_tickets(&self, _ctx: Ctx) -> Result<Vec<Ticket>, ()> {
         let store = self.tickets_store.lock().await;
         Ok(store.iter().filter_map(|t| t.clone()).collect())
     }
 
     //delete ticket
-    pub async fn delete_ticket(&self, id: u64, ctx: Ctx) -> Result<Ticket, Error> {
+    pub async fn delete_ticket(&self, id: u64, _ctx: Ctx) -> Result<Ticket, Error> {
         let mut store = self.tickets_store.lock().await;
         let ticket = store.get_mut(id as usize).and_then(|f| f.take());
         ticket.ok_or(crate::Error::TicketDeleteFailIdNotFound { id })
